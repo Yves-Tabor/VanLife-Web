@@ -9,3 +9,9 @@ export default function NotFound() {
         </div>
     )
 }
+
+// Heyyyy,
+// I just used @netlify to deploy a React Project - I've been building through my React Router learning journey - to the World Wide Web.
+// It's a travel van rental app built while following @scrimba's Advanced React Course.
+// Check out now how it's coming along: link
+// #100DaysOfCode #Coding
