@@ -1,7 +1,8 @@
 import { createServer, Model, Response } from "miragejs"
 
 
-createServer({
+export function makeServer() {
+    return createServer({
     models: {
         vans: Model,
         users: Model
@@ -54,7 +55,7 @@ createServer({
                 return new Response(401, {}, { message: "No user with those credentials found!" })
             }
 
-            // At the very least, don't send the password back to the client 😅
+            // At the very least, don't send the password back to the client 
             foundUser.password = undefined
             return {
                 user: foundUser,
@@ -62,4 +63,5 @@ createServer({
             }
         }, {timing: 2000})
     }
-})
+    })
+}
