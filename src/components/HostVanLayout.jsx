@@ -1,40 +1,33 @@
-import { NavLink } from 'react-router-dom'
 import { Outlet } from 'react-router-dom'
+import HostVanDetail from '../pages/host/HostVanDetail'
 
-export default function HostLayout(){
+export default function HostVanLayout(){
     return(
-        <nav className="top-0 bg-transparent">
-            <nav className="host-nav flex justify-evenly md:w-[50%] p-5 bg-transparent md:space-x-[5%]">
+        <>
+            <HostVanDetail/>
+            <nav className="host-nav flex space-x-[10%] p-5 bg-transparent md:space-x-[5%]">
                 <NavLink
-                    to="Dashboard"
+                    to="Details"
                     className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal py-1 px-2 transition-all duration-300 ease-in-out hover:text-orange-600"}
                 >
-                    Dashboard
-                </NavLink>
-
-                <NavLink
-                    to="income"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600"}
-                >
-                    Income
+                    Details
                 </NavLink>
                 
                 <NavLink
-                    to="vans"
+                    to="Pricing"
                     className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600"}
                 >
-                    Vans
+                    Pricing
                 </NavLink>
 
                 <NavLink
-                    to="reviews"
+                    to="Photos"
                     className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600"}
                 >
-                    Reviews
+                    Photos
                 </NavLink>
-
             </nav>
             <Outlet/>
-        </nav>
+        </>
     )
 }

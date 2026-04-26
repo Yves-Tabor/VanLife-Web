@@ -11,6 +11,9 @@ import Dashboard from './pages/host/Dashboard'
 import Income from './pages/host/Income'
 import Reviews from './pages/host/Reviews'
 import HostVans from './pages/host/HostVans'
+import Details from './pages/host/Details'
+import Pricing from './pages/host/Pricing'
+import Photos from './pages/host/Photos'
 import HostVanDetail from './pages/host/HostVanDetail'
 
 export default function App(){
@@ -21,15 +24,20 @@ export default function App(){
           <Route element={<Layout/>}>
               <Route index element={<Home/>}/>
               <Route path='/About' element={<About/>}/>
-              <Route path='/Login' element={<Login/>}/>
+              {/* <Route path='/Login' element={<Login/>}/> */}
               <Route path='/Vans' element={<Vans/>}/>
               <Route path='/Vans/:id' element={<VanDetail/>}/>
-              <Route path='Host' element={<HostLayout/>}>
+              <Route path='/Host' element={<HostLayout/>}>
                 <Route path='Dashboard' element={<Dashboard/>}/>
                 <Route path='Income' element={<Income/>}/>
-                <Route path='Reviews' element={<Reviews/>}/>
                 <Route path='vans' element={<HostVans/>}/>
-                <Route path=':id' element={<HostVans/>}/>
+                <Route path='vans/:id' element={<HostVanDetail/>}>
+                  <Route index element={<Details/>}/>
+                  <Route path='pricing' element={<Pricing/>}/>
+                  <Route path='photos' element={<Photos/>}/>
+                
+                </Route>
+                <Route path='Reviews' element={<Reviews/>}/>
               </Route>
           </Route>
         </Routes>
