@@ -22,7 +22,7 @@ export default function Vans() {
     const hoverColors = [
         'hover:bg-[#6b0909ff]',
         'hover:bg-[#4ECDC4]',
-        'hover:bg-[#545f61ff]    ',
+        'hover:bg-[#545f61ff]',
         'hover:bg-[#1eba71ff]',
         'hover:bg-[#a18a3eff]',
         'hover:bg-[#151515ff]',
