@@ -25,7 +25,7 @@ export default function NavBar() {
                         </NavLink>
                         <div className="hidden md:flex items-center space-x-4">
                             <NavLink 
-                                to="/Login" 
+                                to="/" 
                                 className={({isActive})=> isActive ? "text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
                             >
                                 <span>Login</span>
@@ -83,7 +83,7 @@ export default function NavBar() {
                         
                         <nav className="p-4 space-y-2">
                             <NavLink 
-                                to="/Login" 
+                                to="/" 
                                 onClick={closeMenu}
                                 className={({isActive})=> isActive ? "block text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium" : "block border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium"}
                             >
