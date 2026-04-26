@@ -8,7 +8,6 @@ export default function Vans() {
         fetch('/api/vans')
             .then(res => res.json())
             .then(data => {
-                console.log("Response:", data.vans)
                 setVans(data.vans)
             })
             .catch(err => {
