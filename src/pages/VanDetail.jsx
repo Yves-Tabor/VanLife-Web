@@ -1,9 +1,12 @@
-import { useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+
 function VanDetail() {
     const { id } = useParams()
+    const location  = useLocation()
+    console.log(location);
     const [van, setVan] = React.useState(null)
     const [loading, setLoading] = React.useState(true)
     const [error, setError] = React.useState(null)
