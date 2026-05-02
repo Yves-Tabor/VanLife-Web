@@ -1,9 +1,10 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { NavLink } from "react-router-dom"
+import avatar from "../assets/images/avatar-icon.png"
 
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-
+    const isAuthenticated = localStorage.getItem('loggedin') === 'true'
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
     }
@@ -25,13 +26,13 @@ export default function NavBar() {
                         </NavLink>
                         <div className="hidden md:flex items-center space-x-4">
                             <NavLink 
-                                to="/" 
+                                to="/login" 
                                 className={({isActive})=> isActive ? "text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
                             >
                                 <span>Login</span>
                             </NavLink>
                             <NavLink 
-                                to="/Host"
+                                to={isAuthenticated ? "/host" : "/login?You need to login befor you can access this page"}
                                 className={({isActive})=> isActive ? "bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1" : "bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1"}
                             >   Host
                             </NavLink>
@@ -39,17 +40,22 @@ export default function NavBar() {
      
                         <nav className="hidden md:flex space-x-8">
                             <NavLink 
-                                to="/About" 
+                                to="/about" 
                                 className={({isActive})=> isActive ? "text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
                             >
                                 About
                             </NavLink>
                             <NavLink 
-                                to="/Vans" 
+                                to="/vans" 
                                 className={({isActive})=> isActive ? "text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
                             >
                                 Vans
                             </NavLink>
+                            <img 
+                            src={avatar}
+                            alt="Avatar"
+                            className="w-auto h-8"
+                            />
                         </nav>
 
                         <button 
@@ -83,7 +89,7 @@ export default function NavBar() {
                         
                         <nav className="p-4 space-y-2">
                             <NavLink 
-                                to="/" 
+                                to="/Login" 
                                 onClick={closeMenu}
                                 className={({isActive})=> isActive ? "block text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium" : "block border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium"}
                             >
@@ -91,7 +97,7 @@ export default function NavBar() {
                             </NavLink>
 
                             <NavLink 
-                                to="/Host"
+                                to={isAuthenticated ? "/host" : "/login?You need to login before you can access this page"}
                                 onClick={closeMenu}
                                 className={({isActive})=> isActive ? "block bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium" : "block bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium"}
                             >

@@ -2,36 +2,44 @@ import { Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar'
 import About from './pages/About'
 import Home from './pages/Home'
-import Login from './pages/Login'
-import Vans from './pages/Vans'
-import VanDetail from './pages/VanDetail'
+import Login, {loader as loginLoader} from './pages/Login'
+import Vans, { loader as vansLoader } from './pages/Vans'
+import VanDetail, { loader as vanDetailLoader } from './pages/VanDetail'
 import Layout from './components/Layout'
 import HostLayout from './components/HostLayout'
 import Dashboard from './pages/host/Dashboard'
 import Income from './pages/host/Income'
 import Reviews from './pages/host/Reviews'
-import HostVans from './pages/host/HostVans'
+import HostVans, { loader as hostVansLoader } from './pages/host/HostVans'
 import Details from './pages/host/Details'
 import Pricing from './pages/host/Pricing'
 import Photos from './pages/host/Photos'
-import HostVanDetail from './pages/host/HostVanDetail'
+import HostVanDetail, { loader as hostVanDetailLoader } from './pages/host/HostVanDetail'
+import NotFound from './pages/NotFound' 
+import Error from './components/Error'
+import requireAuth from './util'
+import {
+  createBrowserRouter,
+  RouterProvider,
+  createRoutesFromElements,
+  redirect
+} from 'react-router-dom'
 
-export default function App(){
-  return(
-    <div className="min-h-screen flex flex-col bg-[#FEF6EA]">
-      <main className="">
-        <Routes>
-          <Route element={<Layout/>}>
-              <Route index element={<Home/>}/>
-              <Route path='/About' element={<About/>}/>
-              {/* <Route path='/Login' element={<Login/>}/> */}
-              <Route path='/Vans' element={<Vans/>}/>
-              <Route path='/Vans/:id' element={<VanDetail/>}/>
-              <Route path='/Host' element={<HostLayout/>}>
-                <Route path='Dashboard' element={<Dashboard/>}/>
-                <Route path='Income' element={<Income/>}/>
-                <Route path='vans' element={<HostVans/>}/>
-                <Route path='vans/:id' element={<HostVanDetail/>}>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<Layout/>}>
+              <Route index element={<Home/>} loader={async()=>{
+                return null;
+              }}/>
+              <Route path='About' element={<About/>}/>
+              <Route path='Login' element={<Login/>} loader={loginLoader}/>
+              <Route path='Vans' element={<Vans/>} errorElement={<Error/>} loader={vansLoader}/>
+              <Route path='Vans/:id' element={<VanDetail/>} loader={vanDetailLoader}/>
+              <Route path='Host' element={<HostLayout/>} loader={async()=> await requireAuth()}>
+                <Route path='dashboard' element={<Dashboard/>} loader={async()=> await requireAuth()}/>
+                <Route path='Income' element={<Income/>} loader={async()=> await requireAuth()}/>
+                <Route path='vans' element={<HostVans/>} loader={hostVansLoader} errorElement={<Error/>}/>
+                <Route path='vans/:id' element={<HostVanDetail/>} loader={hostVanDetailLoader}>
                   <Route index element={<Details/>}/>
                   <Route path='pricing' element={<Pricing/>}/>
                   <Route path='photos' element={<Photos/>}/>
@@ -39,9 +47,16 @@ export default function App(){
                 </Route>
                 <Route path='Reviews' element={<Reviews/>}/>
               </Route>
-          </Route>
-        </Routes>
-      </main>
-    </div>
+              <Route path='*' element={<NotFound/>}/>
+    </Route>
+  ),
+  {
+    hydrateFallback: <div>Loading...</div>
+  }
+)
+
+export default function App(){
+  return (
+    <RouterProvider router={router} />
   )
 }

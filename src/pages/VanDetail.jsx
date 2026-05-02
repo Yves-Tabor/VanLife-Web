@@ -1,39 +1,25 @@
-import { useLocation, useParams } from "react-router-dom"
-import React from 'react'
+import { useLocation, useLoaderData } from "react-router-dom"
 import { Link } from 'react-router-dom'
+import { getVan } from '../api'
+import requireAuth from '../util'
 
+export async function loader({ params }) {
+    await requireAuth();
+    return getVan(params.id)
+}
 
 function VanDetail() {
-    const { id } = useParams()
+    const van = useLoaderData()
     const location  = useLocation()
-    console.log(location);
-    const [van, setVan] = React.useState(null)
-    const [loading, setLoading] = React.useState(true)
-    const [error, setError] = React.useState(null)
-
-    React.useEffect(() => {
-        fetch(`/api/vans/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                setVan(data.vans)
-                setLoading(false)
-            })
-            .catch(err => {
-                console.error("Error fetching van detail:", err)
-                setError(err.message)
-                setLoading(false)
-            })
-    }, [id])
-
-    if (loading) return <div className="text-center p-8">Loading van details...</div>
-    if (error) return <div className="text-center p-8 text-red-500">Error: {error}</div>
+    const search = location.state?.search || '';
+    const type = location.state?.type || 'all';
 
     return (
         <>
             <div className="bg-[#FEF6EA] w-full flex flex-col items-center min-h-screen">
                 <div className="container mx-auto px-4 py-8 w-[85%] flex flex-col items-center justify-center">
-                    <Link to="/Vans" className="w-full mb-6 text-black hover:text-gray-800 flex items-start">
-                        <span className="mr-2">«</span><span className='hover:underline'> Back to all vans</span>
+                    <Link to={`../Vans?${search}`} className="w-full mb-6 text-black hover:text-gray-800 flex items-start">
+                        <span className="mr-2">«</span><span className='hover:underline'> Back to {type.charAt(0).toUpperCase() + type.slice(1)} vans</span>
                     </Link>
 
                     <img 

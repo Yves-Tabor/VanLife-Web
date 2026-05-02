@@ -1,20 +1,14 @@
 import React from "react"
-import { Link, Outlet } from "react-router-dom"
+import { Link, Outlet, useLoaderData } from "react-router-dom"
+import { getHostVans } from '../../api'
 
+export async function loader(){
+    return getHostVans();
+}
 
 export default function HostVans() {
-    const [hostVans, setHostVans] = React.useState([])
         const colors = ['#6b0909ff', '#4ECDC4', '#545f61ff', '#1eba71ff', '#a18a3eff', '#151515ff']
-        React.useEffect(() => {
-            fetch('/api/vans')
-                .then(res => res.json())
-                .then(data => {
-                    setHostVans(data.vans)
-                })
-                .catch(err => {
-                    console.error("Error Fetching Vans:", err)
-                })
-        }, [])
+        const hostVans = useLoaderData();
         
     
         
