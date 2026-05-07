@@ -1,28 +1,25 @@
 import React from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLoaderData, useSearchParams } from 'react-router-dom'
+import getVans from '../api'
+import requireAuth from '../util'
+
+export async function loader(){
+    await requireAuth();
+    return getVans();
+}
 
 export default function Vans() {
-    const [vans, setVans] = React.useState([])
     const colors = ['#6b0909ff', '#4ECDC4', '#545f61ff', '#1eba71ff', '#a18a3eff', '#151515ff']
-    const [searchParams, setSearchParams] = useSearchParams('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [isFiltered, setIsFiltered] = React.useState(false);
     const typeFilter = searchParams.get('type')
-    const [isFiltered, setIsFiltered] = React.useState(false)
-
-    React.useEffect(() => {
-        fetch('/api/vans')
-            .then(res => res.json())
-            .then(data => {
-                setVans(data.vans)
-            })
-            .catch(err => {
-                console.error("Error Fetching Vans:", err)
-            })
-    }, [])
+    const [error, setError] = React.useState(null);
+    const vans = useLoaderData();
     
     const hoverColors = [
         'hover:bg-[#6b0909ff]',
         'hover:bg-[#4ECDC4]',
-        'hover:bg-[#545f61ff]    ',
+        'hover:bg-[#545f61ff]',
         'hover:bg-[#1eba71ff]',
         'hover:bg-[#a18a3eff]',
         'hover:bg-[#151515ff]',
@@ -76,7 +73,7 @@ export default function Vans() {
                         Rugged
                     </Link>
                 </div><div>
-                    {isFiltered && <Link to={getNewSearch('type', null)} className='border-black border-2 px-2'>Clear filters</Link>}
+                    {isFiltered && <Link to={getNewSearch('type', null)} state={{search: searchParams.toString}} className='border-black border-2 px-2'>Clear filters</Link>}
                 </div> */}
 
             </div>
@@ -86,7 +83,7 @@ export default function Vans() {
                              <img src={van.imageUrl} alt='Loading...' className='xs:w-[1fr] h-auto rounded-md md:w-[100%] md:h-auto'/>
                         <h2 className='text-xl font-bold p-[3%]'>{van.name}</h2>
                         <p className='text-lg ml-[1%] p-[2%]'>${van.price}/day</p>
-                       <Link to={`/Vans/${van.id}`}> <p className="flex items-center ml-[3%] justify-center text-[16px] py-2.5 px-6 font-semibold w-fit rounded-md text-white text-sm font-medium" 
+                       <Link to={`${van.id}`} state={{search: `${searchParams.toString()}`, type: typeFilter}}> <p className="flex items-center ml-[3%] justify-center text-[16px] py-2.5 px-6 font-semibold w-fit rounded-md text-white text-sm font-medium" 
                            style={{ backgroundColor: colors[Number(van.id) - 1] }}>
                             {van.type}
                         </p>
