@@ -1,11 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom'
+import Layout from './components/Layout'
 import NavBar from './components/NavBar'
 import About from './pages/About'
 import Home from './pages/Home'
 import Login, {loader as loginLoader, action as loginAction} from './pages/Login'
 import Vans, { loader as vansLoader } from './pages/Vans'
 import VanDetail, { loader as vanDetailLoader } from './pages/VanDetail'
-import Layout from './components/Layout'
 import HostLayout from './components/HostLayout'
 import Dashboard from './pages/host/Dashboard'
 import Income from './pages/host/Income'
@@ -18,14 +18,8 @@ import HostVanDetail, { loader as hostVanDetailLoader } from './pages/host/HostV
 import NotFound from './pages/NotFound' 
 import Error from './components/Error'
 import requireAuth from './util'
-import {
-  createBrowserRouter,
-  RouterProvider,
-  createRoutesFromElements,
-  redirect
-} from 'react-router-dom'
 
-const router = createBrowserRouter(
+export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Layout/>}>
               <Route index element={<Home/>} loader={async()=>{
@@ -54,10 +48,3 @@ const router = createBrowserRouter(
     hydrateFallback: <div>Loading...</div>
   }
 )
-
-export { router }
-export default function App(){
-  return (
-    <RouterProvider router={router} />
-  )
-}

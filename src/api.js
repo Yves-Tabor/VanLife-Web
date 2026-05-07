@@ -56,3 +56,24 @@ async function getHostVan(id){
 
 export default getVans;
 export { getVan, getHostVans, getHostVan };
+
+export async function loginUser(creds){
+    const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(creds)
+    })
+    if(!res.ok){
+        const errorData = await res.json();
+        throw{
+            message: errorData.message || "Login failed",
+            statusText: res.statusText,
+            status: res.status
+        }
+    }
+    
+    const data = await res.json();
+    return data;
+}

@@ -1,28 +1,50 @@
 import React from "react"
-import { Form, useLoaderData } from "react-router-dom"
+import { loginUser } from "../api"
+import { Form, redirect, useLoaderData, useActionData, useNavigation } from 'react-router-dom'
 
 export async function loader({request}) {
     const url = new URL(request.url)
     return url.searchParams.get("message")
 }
+export async function action({request}){
+    const formData = await request.formData();
+    const email = formData.get('email')
+    const password = formData.get('password')
+    
+    try {
+        const info = await loginUser({ email, password })
+        console.log("Login successful:", info);
+        localStorage.setItem("loggedin", "true")
+        return redirect("/Host");
+    } catch (error) {
+        return error.message;
+    }
+}
 
 export default function Login() {
-    const [formData, setFormData] = React.useState({email: "", password: ""})
+    const [error, setError] = React.useState(null)
+    const [status, setStatus] = React.useState('idle')
+    const errorMsg = useActionData();
     const message = useLoaderData();
+    const navigation = useNavigation();
+
     function handleSubmit(e){
         e.preventDefault();
-        console.log(formData);
-        e.target.reset();
-        setFormData({email: "", password: ""})
-    }
-
-    function handleChange(e){
-        const {name, value} = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
+        setError(null)
+        setStatus("submitting")
+        
+        const formData = new FormData(e.target);
+        const email = formData.get('email');
+        const password = formData.get('password');
+        
+        loginUser({ email, password })
+            .then(data=>{
+                navigate("/Host", { replace: true })
+            })
+            .catch(err => setError(err))
+            .finally(() => setStatus("idle"))
+        }
+    
     return (
         <div className="max-h-screen py-[10vh] bg-[#FFF7ED] flex items-center justify-center px-4">
             <div className="max-w-md w-full space-y-8">
@@ -31,8 +53,9 @@ export default function Login() {
                         Sign in to your account
                     </h2>
                     {message && <p className="text-red-500">{message}</p>}
+                    {errorMsg && <h3 className="text-red-500">{typeof error === 'string' ? errorMsg : 'An error occurred'}</h3>}
                 </div>
-                <Form className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+                <Form action='/Login' method="post" replace='/Host' className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-lg">
                     <div className="space-y-4">
                         <div>
                             <input
@@ -57,10 +80,13 @@ export default function Login() {
                     <div>
                         <button
                             type="submit"
-                            onChange={handleChange}
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                        >
-                            Log In
+                            disabled={navigation.state === "submitting"}
+                >
+                    {navigation.state === "submitting" 
+                        ? "Logging in..." 
+                        : "Log in"
+                    }
                         </button>
                     </div>
                 </Form>
