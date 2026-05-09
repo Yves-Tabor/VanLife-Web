@@ -6,10 +6,12 @@ export async function loader({request}) {
     const url = new URL(request.url)
     return url.searchParams.get("message")
 }
+
 export async function action({request}){
     const formData = await request.formData();
     const email = formData.get('email')
     const password = formData.get('password')
+    const pathname = new URL(request.url).searchParams.get("redirectTo") || "/Host"
     
     try {
         const info = await loginUser({ email, password })
@@ -53,7 +55,7 @@ export default function Login() {
                         Sign in to your account
                     </h2>
                     {message && <p className="text-red-500">{message}</p>}
-                    {errorMsg && <h3 className="text-red-500">{typeof error === 'string' ? errorMsg : 'An error occurred'}</h3>}
+                    {errorMsg && <h3 className="text-red-500">{errorMsg}</h3>}
                 </div>
                 <Form action='/Login' method="post" replace='/Host' className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-lg">
                     <div className="space-y-4">

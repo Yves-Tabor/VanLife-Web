@@ -1,11 +1,11 @@
 import React from 'react'
-import { Link, useLoaderData, useSearchParams } from 'react-router-dom'
+import { Link, useLoaderData, useSearchParams, defer, Await } from 'react-router-dom'
 import getVans from '../api'
 import requireAuth from '../util'
 
 export async function loader(){
     await requireAuth();
-    return getVans();
+    return defer({vans: getVans()});
 }
 
 export default function Vans() {
@@ -28,11 +28,11 @@ export default function Vans() {
     const randomHover1 = hoverColors[Math.floor(Math.random() * hoverColors.length)];
     const randomHover2 = hoverColors[Math.floor(Math.random() * hoverColors.length)];
     const randomHover3 = hoverColors[Math.floor(Math.random() * hoverColors.length)];
-    
-    return (
-        <div className="p-2 bg-[#FEF6EA]">
-            <h1 className="text-2xl font-bold p-5">Explore our van options</h1>
-            <div className='w-full flex flex-col md:flex-row items-center justify-evenly p-[5%] md:p-[2%] gap-3 md:gap-0'>
+
+    function renderVans(vans){
+        return (
+            <>
+                <div className='w-full flex flex-col md:flex-row items-center justify-evenly p-[5%] md:p-[2%] gap-3 md:gap-0'>
                 <div className='w-full md:w-2/3 flex justify-between md:justify-evenly text-white'>
                     <button onClick={()=> {
                         setIsFiltered(prev=> prev = true)
@@ -91,6 +91,18 @@ export default function Vans() {
                        </li>
             })}
            </ul>
+            </>
+        )
+    }
+    
+    return (
+        <div className="p-2 bg-[#FEF6EA]">
+            <h1 className="text-2xl font-bold p-5">Explore our van options</h1>
+            <React.Suspense fallback={<h2>Loading Vans ...</h2>}>
+                <Await resolve={vans.vans}>
+                    {renderVans}
+                </Await>
+            </React.Suspense>
         </div>
     )
 }
