@@ -14,7 +14,7 @@ export default function Vans() {
     const [isFiltered, setIsFiltered] = React.useState(false);
     const typeFilter = searchParams.get('type')
     const [error, setError] = React.useState(null);
-    const vans = useLoaderData();
+    const {vans} = useLoaderData();
     
     const hoverColors = [
         'hover:bg-[#6b0909ff]',
@@ -99,7 +99,7 @@ export default function Vans() {
         <div className="p-2 bg-[#FEF6EA]">
             <h1 className="text-2xl font-bold p-5">Explore our van options</h1>
             <React.Suspense fallback={<h2>Loading Vans ...</h2>}>
-                <Await resolve={vans.vans}>
+                <Await resolve={vans}>
                     {renderVans}
                 </Await>
             </React.Suspense>
