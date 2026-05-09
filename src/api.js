@@ -1,3 +1,44 @@
+// import { initializeApp } from 'firebase/app';
+// import { getFirestore, collection, doc, getDocs, getDoc, query, where } from 'firebase/firestore';
+
+// const firebaseConfig = {
+//   apiKey: "AIzaSyCpkB6_xXSQ9A4f-KNZ4XIeOXbscm8gARA",
+//   authDomain: "vanlife-864e0.firebaseapp.com",
+//   projectId: "vanlife-864e0",
+//   storageBucket: "vanlife-864e0.firebasestorage.app",
+//   messagingSenderId: "932957926693",
+//   appId: "1:932957926693:web:ee326c388afa65110016cc",
+// };
+
+// const app = initializeApp(firebaseConfig);
+// const db = getFirestore(app);
+
+// const vansCollection = collection(db, 'vans');
+
+// export default async function getVans(){
+//     const querySnapshot = await getDocs(vansCollection);
+//     const dataArr = querySnapshot.docs.map(doc =>{
+//         return {
+//             ...doc.data(),
+//             id: doc.id
+//         };
+//     });
+//     return dataArr;
+// }
+
+// export async function getVan(id){
+//     const q = query(vansCollection, where('hostId', '==', "123"));
+//     const querySnapshot = await getDocs(q);
+//     if (querySnapshot.empty) {
+//         throw {
+//             message: "Van not found",
+//             statusText: "Not Found",
+//             status: 404
+//         };
+//     }
+//     return docSnap.data();
+// }
+
 async function getVans(){
     const res = await fetch('/api/vans') 
     if(!res.ok){

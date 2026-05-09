@@ -6,29 +6,29 @@ export default function HostLayout(){
         <nav className="top-0 bg-transparent">
             <nav className="host-nav flex justify-evenly md:w-[50%] p-5 bg-transparent md:space-x-[5%]">
                 <NavLink
-                    to="dashboard"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal py-1 px-2 transition-all duration-300 ease-in-out hover:text-orange-600"}
+                    to="."
+                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal py-1 px-2 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
                 >
                     Dashboard
                 </NavLink>
 
                 <NavLink
                     to="income"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600"}
+                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
                 >
                     Income
                 </NavLink>
                 
                 <NavLink
                     to="vans"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600"}
+                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
                 >
                     Vans
                 </NavLink>
 
                 <NavLink
                     to="reviews"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600"}
+                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
                 >
                     Reviews
                 </NavLink>
