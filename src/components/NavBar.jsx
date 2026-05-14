@@ -29,6 +29,7 @@ export default function NavBar() {
         setShowUserPopup(!showUserPopup)
     }
 
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (userPopupRef.current && !userPopupRef.current.contains(event.target)) {
