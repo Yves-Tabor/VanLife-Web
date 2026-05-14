@@ -16,8 +16,9 @@ export async function action({request}){
     try {
         const info = await loginUser({ email, password })
         console.log("Login successful:", info);
-        localStorage.setItem("loggedin", "true")
-        return redirect("/Host");
+        const response = redirect(pathname);
+        response.body = true;  // Workaround for Mirage JS Response polyfill issue
+        return response;
     } catch (error) {
         return error.message;
     }

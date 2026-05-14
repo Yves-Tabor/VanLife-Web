@@ -5,6 +5,7 @@ import Footer from './Footer'
 
 const Error = () => {
   const error = useRouteError()
+  console.log(error)
   return (
     <div className='p-[10%] h-[70svh] space-y-[8%]'>
         <h1 className='text-2xl'>Error: {error.message}</h1>
