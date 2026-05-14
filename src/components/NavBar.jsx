@@ -42,7 +42,8 @@ export default function NavBar() {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [])
-
+    //     
+    // 
     return (
         <>
             <header className={!(theme === 'light') ? 'bg-[#FEF6EA] dark:bg-black border-b border-transparent dark:border-gray-800 h-30 p-7 top-0 z-50 transition-colors duration-300' : 'bg-[#FEF6EA] border-b border-transparent h-30 p-7 top-0 z-50 transition-colors duration-300'}>
