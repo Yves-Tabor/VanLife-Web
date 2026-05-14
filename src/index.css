@@ -1,6 +1,11 @@
 @import "tailwindcss";
 body{
   font-family: 'Cambria', 'Inter', sans-serif;
+  @apply transition-colors duration-300;
+}
+
+html.dark body {
+  @apply bg-black text-white;
 }
 .home-container {
     background: linear-gradient(0deg, rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.46)),

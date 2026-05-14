@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useLoaderData, useSearchParams, defer, Await } from 'react-router-dom'
 import getVans from '../api'
 import requireAuth from '../util'
+import { useTheme } from '../components/Theme'
 
 export async function loader(){
     await requireAuth();
@@ -12,9 +13,10 @@ export default function Vans() {
     const colors = ['#6b0909ff', '#4ECDC4', '#545f61ff', '#1eba71ff', '#a18a3eff', '#151515ff']
     const [searchParams, setSearchParams] = useSearchParams();
     const [isFiltered, setIsFiltered] = React.useState(false);
+    const { theme } = useTheme();
     const typeFilter = searchParams.get('type')
     const [error, setError] = React.useState(null);
-    const {vans} = useLoaderData();
+    const { vans } = useLoaderData();
     
     const hoverColors = [
         'hover:bg-[#6b0909ff]',
@@ -96,7 +98,7 @@ export default function Vans() {
     }
     
     return (
-        <div className="p-2 bg-[#FEF6EA]">
+        <div className={`p-2 ${theme === 'light' ? 'bg-[#FEF6EA]' : 'bg-black'}`}>
             <h1 className="text-2xl font-bold p-5">Explore our van options</h1>
             <React.Suspense fallback={<h2>Loading Vans ...</h2>}>
                 <Await resolve={vans}>

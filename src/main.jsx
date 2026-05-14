@@ -6,4 +6,10 @@ import { makeServer } from './Server'
 
 makeServer()
 
-createRoot(document.getElementById('root')).render(<RouterProvider router={router} />)
+import { ThemeProvider } from './components/Theme.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <ThemeProvider>
+    <RouterProvider router={router} />
+  </ThemeProvider>
+)

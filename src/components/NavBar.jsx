@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import avatar from "../assets/images/avatar-icon.png"
+import { useTheme } from "./Theme"
 
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -8,6 +9,7 @@ export default function NavBar() {
     const isAuthenticated = localStorage.getItem('loggedin') === 'true'
     const navigate = useNavigate()
     const userPopupRef = useRef(null)
+    const { theme, toggleTheme } = useTheme()
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
@@ -42,57 +44,64 @@ export default function NavBar() {
 
     return (
         <>
-            <header className="bg-[#FEF6EA] h-30 p-7 top-0 z-50">
+            <header className={!(theme === 'light') ? 'bg-[#FEF6EA] dark:bg-black border-b border-transparent dark:border-gray-800 h-30 p-7 top-0 z-50 transition-colors duration-300' : 'bg-[#FEF6EA] border-b border-transparent h-30 p-7 top-0 z-50 transition-colors duration-300'}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <NavLink 
-                            to="/" 
-                            className={({isActive})=> isActive ? "w-1/4 flex items-center space-x-2 text-black font-bold text-xl hover:text-gray-700" : "w-1/4 flex items-center space-x-2 text-black font-bold text-xl hover:text-gray-700"}
+                        <NavLink
+                            to="/"
+                            className={({ isActive }) => isActive ? "w-1/4 flex items-center space-x-2 text-gray-500 font-bold text-xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors" : "w-1/4 flex items-center space-x-2 text-gray-500 font-bold text-xl hover:text-gray-700 dark:hover:text-gray-300 transition-colors"}
                         >
                             <span className="text-2xl font-black">#VANLIFE</span>
                         </NavLink>
                         <div className="w-2/5 hidden md:flex justify-end items-center space-x-[15%]">
-                            <NavLink 
-                                to="/Login" 
-                                className={({isActive})=> isActive ? "block text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "hidden border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
+                            <NavLink
+                                to="/Login"
+                                className={({ isActive }) => isActive ? `${theme === 'light' ? 'block text-black border-t-4 bg-white rounded-b-sm border-transparent shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors' : 'block bg-white text-black border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors'}` : 'hidden border-t-4 rounded-b-sm border-transparent text-black dark:text-gray-200 hover:shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-400 font-medium flex items-center space-x-1 transition-colors'}
                             >
                                 <span>Login</span>
                             </NavLink>
-                            <NavLink 
+                            <NavLink
                                 to={isAuthenticated ? "/Host" : "/login?You need to login befor you can access this page"}
-                                className={({isActive})=> isActive ? "bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1" : "bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1"}
+                                className={({ isActive }) => isActive ? "bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1 dark:bg-gray-800" : "bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1 dark:bg-gray-800 dark:border-gray-600"}
                             >   Host
                             </NavLink>
                         </div>
-     
+
                         <nav className="hidden md:flex space-x-8">
-                            <NavLink 
-                                to="/About" 
-                                className={({isActive})=> isActive ? "text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
+                            <NavLink
+                                to="/About"
+                                className={({ isActive }) => isActive ? `${theme === 'light' ? 'text-black border-t-4 bg-[#FEF6EA] border-t-[#FFB86A] rounded-b-sm shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors' : 'text-black border-t-4 bg-[#FEF6EA] border-t-[#FFB86A] rounded-b-sm shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors'}` : `${theme === 'light' ? 'text-black bg-[#FEF6EA] font-bold border-t-4 rounded-b-sm border-transparent hover:shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors' : 'text-white bg-transparent font-bold border-t-4 rounded-b-sm border-transparent hover:shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors'}`}
                             >
                                 About
                             </NavLink>
-                            <NavLink 
+                            <NavLink
                                 to="/Vans"
-                                className={({isActive})=> isActive ? "text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1" : "border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium flex items-center space-x-1"}
+                                className={({ isActive }) => isActive ? `${theme === 'light' ? 'text-black border-t-4 bg-[#FEF6EA] border-t-[#FFB86A] rounded-b-sm shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors' : 'text-black border-t-4 bg-[#FEF6EA] border-t-[#FFB86A] rounded-b-sm shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors'}` : `${theme === 'light' ? 'text-black bg-[#FEF6EA] font-bold border-t-4 rounded-b-sm border-transparent hover:shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors' : 'text-white bg-transparent font-bold border-t-4 rounded-b-sm border-transparent hover:shadow-sm px-4 py-2 font-medium flex items-center space-x-1 transition-colors'}`}
                             >
                                 Vans
                             </NavLink>
                         </nav>
-                        <div className="hidden md:flex justify-end md:pl-[1%] lg:pl-[3%] relative">
+                        <div className="hidden md:flex justify-end md:pl-[1%] lg:pl-[3%] relative items-center space-x-4">
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 rounded-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors dark:text-white"
+                                aria-label="Toggle theme"
+                            >
+                                {theme === 'light' ? '🌙' : '☀️'}
+                            </button>
                             {isAuthenticated ? (
                                 <div className="relative" ref={userPopupRef}>
-                                    <button 
+                                    <button
                                         onClick={toggleUserPopup}
                                         className="hover:opacity-80 transition-opacity"
                                     >
-                                        <img 
+                                        <img
                                             src={avatar}
                                             alt="User Avatar"
                                             className="w-auto h-8 cursor-pointer"
                                         />
                                     </button>
-                                    
+
                                     {showUserPopup && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                             <div className="p-2">
@@ -107,81 +116,88 @@ export default function NavBar() {
                                     )}
                                 </div>
                             ) : (
-                                <img 
+                                <img
                                     src={avatar}
                                     alt="Avatar"
-                                    className="w-auto h-8 opacity-50"
+                                    className={theme === 'light' ? "w-auto h-8 opacity-50" : "invert w-auto h-8 opacity-50"}
                                 />
                             )}
                         </div>
 
-                        <button 
-                            onClick={toggleMenu}
-                            className="md:hidden bg-black border-t-4 border-black rounded-b-sm text-white px-3 py-1 hover:bg-gray-800 transition-colors"
-                        >
-                            <span className="text-2xl">{isMenuOpen ? '✕' : '☰'}</span>
-                        </button>
+                        <div className="md:hidden flex items-center space-x-2">
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 text-2xl dark:text-white"
+                            >
+                                {theme === 'light' ? '🌙' : '☀️'}
+                            </button>
+                            <button
+                                onClick={toggleMenu}
+                                className="bg-black border-t-4 border-black rounded-b-sm text-white px-3 py-1 hover:bg-gray-800 transition-colors dark:bg-gray-800 dark:border-gray-600"
+                            >
+                                <span className="text-2xl">{isMenuOpen ? '✕' : '☰'}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
 
             {isMenuOpen && (
                 <div className="absolute top-0 z-60 md:hidden">
-                    <div 
+                    <div
                         className="fixed inset-0 bg-transparent"
                         onClick={closeMenu}
                     />
-                    
-                    <div className="fixed right-0.5 top-9 h-75 w-55 bg-[#FEF6EA] shadow-xl rounded-b-md transform transition-transform duration-300 ease-in-out">
+
+                    <div className={theme === 'light' ? "fixed right-0.5 top-9 h-fit w-55 bg-gray-500 border border-transparent shadow-sm rounded-b-sm transform transition-transform duration-300 ease-in-out" : "fixed right-0.5 top-9 h-fit w-55 bg-[#FEF6EA] dark:bg-black border border-transparent dark:border-gray-800 shadow-xl rounded-b-md transform transition-transform duration-300 ease-in-out"}>
                         <div className="p-1 pr-[20%] flex">
                             <div className="w-1/2 md:flex justify-start px-6 py-1 items-center">
-                                <NavLink to="/">
-                                    <img 
-                                        src={avatar}
-                                        alt="Avatar"
-                                        className="w-auto h-10"
-                                    />
-                                </NavLink>
+                                <button
+                                onClick={isAuthenticated ? handleLogout : null}
+                                className="p-2 dark:text-white"
+                            >
+                                {isAuthenticated? "Logout" : ""}
+                            </button>
                             </div>
                             <div className="flex  w-1/2 items-center justify-end">
-                                <button 
+                                <button
                                     onClick={closeMenu}
-                                    className="bg-black border-t-4 border-black rounded-b-sm text-white px-3 py-1 hover:bg-gray-800 transition-colors"
+                                    className="bg-black border-t-4 border-black rounded-b-sm text-white px-3 py-1 hover:bg-gray-800 transition-colors dark:bg-gray-800 dark:border-gray-600"
                                 >
                                     <span className="text-2xl">✕</span>
                                 </button>
                             </div>
                         </div>
-                        
+
                         <nav className="p-4 space-y-2">
-                            <NavLink 
-                                to="/Login" 
+                            <NavLink
+                                to="/Login"
                                 onClick={closeMenu}
-                                className={({isActive})=> isActive ? "block text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium" : "hidden border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium"}
+                                className={({ isActive }) => isActive ? "block text-black dark:text-white border-t-4 rounded-b-sm border-black dark:border-white shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-300 font-medium" : "hidden border-t-4 rounded-b-sm border-transparent text-black dark:text-white hover:shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-300 font-medium"}
                             >
                                 Login
                             </NavLink>
 
-                            <NavLink 
+                            <NavLink
                                 to={isAuthenticated ? "/Host" : "/login?You need to login before you can access this page"}
                                 onClick={closeMenu}
-                                className={({isActive})=> isActive ? "block bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium" : "block bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium"}
+                                className={({ isActive }) => isActive ? "block bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium dark:bg-gray-800" : "block bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium dark:bg-gray-800 dark:border-gray-600"}
                             >
                                 Host
                             </NavLink>
 
-                            <NavLink 
-                                to="/About" 
+                            <NavLink
+                                to="/About"
                                 onClick={closeMenu}
-                                className={({isActive})=> isActive ? "block text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium" : "block border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium"}
+                                className={({ isActive }) => isActive ? "block text-black dark:text-white border-t-4 rounded-b-sm border-black dark:border-white shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-300 font-medium" : "block border-t-4 rounded-b-sm border-transparent text-black dark:text-white hover:shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-300 font-medium"}
                             >
                                 About
                             </NavLink>
 
-                            <NavLink 
-                                to="/Vans" 
+                            <NavLink
+                                to="/Vans"
                                 onClick={closeMenu}
-                                className={({isActive})=> isActive ? "block text-black border-t-4 rounded-b-sm border-black shadow-lg px-4 py-2 hover:text-gray-600 font-medium" : "block border-t-4 rounded-b-sm border-transparent text-black hover:shadow-lg px-4 py-2 hover:text-gray-600 font-medium"}
+                                className={({ isActive }) => isActive ? "block text-black dark:text-white border-t-4 rounded-b-sm border-black dark:border-white shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-300 font-medium" : "block border-t-4 rounded-b-sm border-transparent text-black dark:text-white hover:shadow-lg px-4 py-2 hover:text-gray-600 dark:hover:text-gray-300 font-medium"}
                             >
                                 Vans
                             </NavLink>

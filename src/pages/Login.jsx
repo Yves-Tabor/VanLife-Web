@@ -1,6 +1,7 @@
 import React from "react"
 import { loginUser } from "../api"
 import { Form, redirect, useLoaderData, useActionData, useNavigation } from 'react-router-dom'
+import { useTheme } from "../components/Theme"
 
 export async function loader({request}) {
     const url = new URL(request.url)
@@ -17,7 +18,7 @@ export async function action({request}){
         const info = await loginUser({ email, password })
         console.log("Login successful:", info);
         const response = redirect(pathname);
-        response.body = true;  // Workaround for Mirage JS Response polyfill issue
+        response.body = true;
         return response;
     } catch (error) {
         return error.message;
@@ -28,6 +29,7 @@ export default function Login() {
     const [error, setError] = React.useState(null)
     const [status, setStatus] = React.useState('idle')
     const errorMsg = useActionData();
+    const {theme} = useTheme()
     const message = useLoaderData();
     const navigation = useNavigation();
 
@@ -49,10 +51,10 @@ export default function Login() {
         }
     
     return (
-        <div className="max-h-screen py-[10vh] bg-[#FFF7ED] flex items-center justify-center px-4">
+        <div className={`${theme === 'light' ? 'bg-[#FFF7ED]' : 'bg-black'} max-h-screen py-[10vh] flex items-center justify-center px-4 ${theme === 'dark' ? 'dark' : ''}`}>
             <div className="max-w-md w-full space-y-8">
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    <h2 className={`mt-6 text-center text-3xl font-extrabold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
                         Sign in to your account
                     </h2>
                     {message && <p className="text-red-500">{message}</p>}

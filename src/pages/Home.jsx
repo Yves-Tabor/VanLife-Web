@@ -1,10 +1,12 @@
 
 import { Link } from "react-router-dom"
+import { useTheme } from "../components/Theme"
 
 export default function Home() {
+    const {theme} = useTheme()
     return (
         <>
-        <div className="w-full flex flex-col items-center justify-center bg-[#FEF6EA]">
+        <div className={`w-full flex flex-col items-center justify-center ${theme === 'light' ? 'bg-[#FEF6EA]' : 'bg-black'}`}>
             <div className="w-full home-container h-[85vh] flex flex-col p-2 items-start justify-start gap-6 md:w-[90%]">
                 <h1 className='font-bold text-4xl'>You got the travel plans, we got the travel vans.</h1>
                 <p className="text-md">Add adventure to your life by joining the #vanlife movement. Rent the perfect van to make your perfect road trip.</p>
