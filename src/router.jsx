@@ -7,8 +7,8 @@ import Vans, { loader as vansLoader, VansError } from './pages/Vans'
 import VanDetail, { loader as vanDetailLoader, action as vanDetailAction } from './pages/VanDetail'
 import HostLayout from './components/HostLayout'
 import Dashboard from './pages/host/Dashboard'
-import Income from './pages/host/Income'
-import Reviews from './pages/host/Reviews'
+import Income, { loader as incomeLoader } from './pages/host/Income'
+import Reviews, { loader as reviewsLoader } from './pages/host/Reviews'
 import HostVans, { loader as hostVansLoader } from './pages/host/HostVans'
 import Details from './pages/host/Details'
 import Pricing from './pages/host/Pricing'
@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
           {
             path: "Income",
             element: <Income />,
-            loader: async ({ request }) => await requireAuth(request),
+            loader: incomeLoader,
           },
           {
             path: "vans",
@@ -94,6 +94,7 @@ export const router = createBrowserRouter([
           {
             path: "Reviews",
             element: <Reviews />,
+            loader: reviewsLoader,
           },
         ],
       },

@@ -5,6 +5,7 @@ import {
     getDoc,
     getDocs,
     query,
+    serverTimestamp,
     where,
 } from "firebase/firestore"
 import {
@@ -156,6 +157,7 @@ export async function rentVan(catalogVanId) {
         hostId,
         isCatalog: false,
         catalogVanId,
+        rentedAt: serverTimestamp(),
     })
 
     return newRef.id
@@ -179,6 +181,130 @@ export async function getHostVans() {
         ...docSnap.data(),
         id: docSnap.id,
     }))
+}
+
+const BOOKED_DAYS_PER_RENTAL = 12
+const INCOME_WINDOW_DAYS = 30
+
+function formatTransactionDate(date) {
+    const month = date.toLocaleString("en-US", { month: "short" })
+    const day = date.getDate()
+    const year = String(date.getFullYear()).slice(-2)
+    return `${month} ${day}, '${year}`
+}
+
+function parseRentedAt(rentedAt) {
+    if (!rentedAt) {
+        return new Date()
+    }
+    if (typeof rentedAt.toDate === "function") {
+        return rentedAt.toDate()
+    }
+    return new Date(rentedAt)
+}
+
+export function getHostIncomeSummary(hostVans) {
+    const windowMs = INCOME_WINDOW_DAYS * 24 * 60 * 60 * 1000
+    const now = Date.now()
+
+    const transactions = hostVans
+        .map((van) => {
+            const rentedDate = parseRentedAt(van.rentedAt)
+            return {
+                id: van.id,
+                amount: van.price * BOOKED_DAYS_PER_RENTAL,
+                date: formatTransactionDate(rentedDate),
+                timestamp: rentedDate.getTime(),
+                vanName: van.name,
+            }
+        })
+        .filter((t) => now - t.timestamp <= windowMs)
+        .sort((a, b) => b.timestamp - a.timestamp)
+
+    const total = transactions.reduce((sum, t) => sum + t.amount, 0)
+
+    return {
+        total,
+        transactions,
+        count: transactions.length,
+    }
+}
+
+const REVIEWER_NAMES = ["Elliot", "Sandy", "Maria", "James", "Priya", "Alex"]
+
+function formatReviewDate(date) {
+    return date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    })
+}
+
+function buildReviewContent(van, index) {
+    const lowerName = van.name.toLowerCase()
+
+    if (lowerName.includes("beach bum")) {
+        return {
+            rating: 5,
+            name: "Elliot",
+            text: `The ${van.name} is such an awesome van! Such a comfortable trip. We had it for 2 weeks and there was not a single issue. Super clean when we picked it up and the host is very comfortable and understanding. Highly recommend!`,
+        }
+    }
+
+    if (lowerName.includes("modest explorer")) {
+        return {
+            rating: 5,
+            name: "Sandy",
+            text: `This is our third time using the ${van.name} for our travels and we love it! No complaints, absolutely perfect!`,
+        }
+    }
+
+    const name = REVIEWER_NAMES[index % REVIEWER_NAMES.length]
+    const templates = [
+        `We rented the ${van.name} for a week and loved every mile. Comfortable, clean, and exactly as described. Would book again!`,
+        `The ${van.name} made our road trip unforgettable. Smooth drive, plenty of space, and the host was fantastic to work with.`,
+        `Outstanding experience with the ${van.name}. Pickup was easy, the van was spotless, and it handled mountain roads beautifully.`,
+    ]
+
+    return {
+        rating: 5,
+        name,
+        text: templates[index % templates.length],
+    }
+}
+
+export function getHostReviewsSummary(hostVans) {
+    const windowMs = INCOME_WINDOW_DAYS * 24 * 60 * 60 * 1000
+    const now = Date.now()
+
+    const reviews = hostVans
+        .map((van, index) => {
+            const rentedDate = parseRentedAt(van.rentedAt)
+            const { rating, name, text } = buildReviewContent(van, index)
+
+            return {
+                id: van.id,
+                rating,
+                name,
+                date: formatReviewDate(rentedDate),
+                text,
+                timestamp: rentedDate.getTime(),
+                vanName: van.name,
+            }
+        })
+        .filter((r) => now - r.timestamp <= windowMs)
+        .sort((a, b) => b.timestamp - a.timestamp)
+
+    const averageRating =
+        reviews.length > 0
+            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            : 0
+
+    return {
+        reviews,
+        count: reviews.length,
+        averageRating,
+    }
 }
 
 export async function getHostVan(id) {
