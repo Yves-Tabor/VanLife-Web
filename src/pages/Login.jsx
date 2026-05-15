@@ -1,99 +1,183 @@
-import React from "react"
-import { loginUser } from "../api"
-import { Form, redirect, useLoaderData, useActionData, useNavigation } from 'react-router-dom'
+import { loginUser, signupUser } from "../api"
+import {
+    Form,
+    redirect,
+    useLoaderData,
+    useActionData,
+    useNavigation,
+    Link,
+} from "react-router-dom"
 import { useTheme } from "../components/Theme"
 
-export async function loader({request}) {
+export async function loader({ request }) {
     const url = new URL(request.url)
-    return url.searchParams.get("message")
-}
-
-export async function action({request}){
-    const formData = await request.formData();
-    const email = formData.get('email')
-    const password = formData.get('password')
-    const pathname = new URL(request.url).searchParams.get("redirectTo") || "/Host"
-    
-    try {
-        const info = await loginUser({ email, password })
-        console.log("Login successful:", info);
-        const response = redirect(pathname);
-        response.body = true;
-        return response;
-    } catch (error) {
-        return error.message;
+    return {
+        message: url.searchParams.get("message"),
+        mode: url.searchParams.get("mode") === "signup" ? "signup" : "login",
     }
 }
 
-export default function Login() {
-    const [error, setError] = React.useState(null)
-    const [status, setStatus] = React.useState('idle')
-    const errorMsg = useActionData();
-    const {theme} = useTheme()
-    const message = useLoaderData();
-    const navigation = useNavigation();
+export async function action({ request }) {
+    const formData = await request.formData()
+    const email = formData.get("email")
+    const password = formData.get("password")
+    const confirmPassword = formData.get("confirmPassword")
+    const intent = formData.get("intent")
+    const pathname =
+        new URL(request.url).searchParams.get("redirectTo") || "/Host"
 
-    function handleSubmit(e){
-        e.preventDefault();
-        setError(null)
-        setStatus("submitting")
-        
-        const formData = new FormData(e.target);
-        const email = formData.get('email');
-        const password = formData.get('password');
-        
-        loginUser({ email, password })
-            .then(data=>{
-                navigate("/Host", { replace: true })
-            })
-            .catch(err => setError(err))
-            .finally(() => setStatus("idle"))
+    if (intent === "signup" && password !== confirmPassword) {
+        return "Passwords do not match."
+    }
+
+    try {
+        if (intent === "signup") {
+            await signupUser({ email, password })
+        } else {
+            await loginUser({ email, password })
         }
-    
+        return redirect(pathname)
+    } catch (error) {
+        return error.message
+    }
+}
+
+function inputClass(theme) {
+    return `appearance-none rounded-md block w-full px-3 py-2 border text-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 ${
+        theme === "light"
+            ? "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+            : "border-gray-700 bg-gray-800 text-white placeholder-gray-400"
+    }`
+}
+
+export default function Login() {
+    const { theme } = useTheme()
+    const { message, mode } = useLoaderData()
+    const errorMsg = useActionData()
+    const navigation = useNavigation()
+    const isSignup = mode === "signup"
+    const isSubmitting = navigation.state === "submitting"
+
+    const heading = isSignup ? "Create your account" : "Sign in to your account"
+    const submitLabel = isSubmitting
+        ? isSignup
+            ? "Creating account..."
+            : "Logging in..."
+        : isSignup
+          ? "Sign up"
+          : "Log in"
+
     return (
-        <div className={`${theme === 'light' ? 'bg-[#FFF7ED]' : 'bg-black'} max-h-screen py-[10vh] flex items-center justify-center px-4 ${theme === 'dark' ? 'dark' : ''}`}>
+        <div
+            className={`${theme === "light" ? "bg-[#FFF7ED]" : "bg-black"} min-h-screen py-[10vh] flex items-center justify-center px-4 ${theme === "dark" ? "dark" : ""}`}
+        >
             <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className={`mt-6 text-center text-3xl font-extrabold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-                        Sign in to your account
+                <div className="text-center space-y-2">
+                    <h2
+                        className={`text-3xl font-extrabold ${theme === "light" ? "text-gray-900" : "text-white"}`}
+                    >
+                        {heading}
                     </h2>
-                    {message && <p className="text-red-500">{message}</p>}
-                    {errorMsg && <h3 className="text-red-500">{errorMsg}</h3>}
+                    <p
+                        className={`text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}
+                    >
+                        {isSignup
+                            ? "Join VanLife to list and manage your vans."
+                            : "Welcome back! Enter your credentials to continue."}
+                    </p>
+                    {message && (
+                        <p className="text-sm text-amber-600 dark:text-amber-400">
+                            {message}
+                        </p>
+                    )}
+                    {errorMsg && (
+                        <p className="text-sm text-red-500" role="alert">
+                            {errorMsg}
+                        </p>
+                    )}
                 </div>
-                <Form action='/Login' method="post" replace='/Host' className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-lg">
+
+                <Form
+                    method="post"
+                    className={`mt-8 space-y-6 p-8 rounded-lg shadow-lg border ${
+                        theme === "light"
+                            ? "bg-white border-gray-100"
+                            : "bg-gray-900 border-gray-800"
+                    }`}
+                >
+                    <input
+                        type="hidden"
+                        name="intent"
+                        value={isSignup ? "signup" : "login"}
+                    />
+
                     <div className="space-y-4">
-                        <div>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            className={inputClass(theme)}
+                            placeholder="Email address"
+                        />
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete={isSignup ? "new-password" : "current-password"}
+                            required
+                            minLength={6}
+                            className={inputClass(theme)}
+                            placeholder="Password"
+                        />
+                        {isSignup && (
                             <input
-                                name="email"
-                                type="email"
-                                required
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
-                            />
-                        </div>
-                        <div>
-                            <input
-                                name="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
                                 type="password"
+                                autoComplete="new-password"
                                 required
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
+                                minLength={6}
+                                className={inputClass(theme)}
+                                placeholder="Confirm password"
                             />
-                        </div>
+                        )}
                     </div>
 
-                    <div>
-                        <button
-                            type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                            disabled={navigation.state === "submitting"}
-                >
-                    {navigation.state === "submitting" 
-                        ? "Logging in..." 
-                        : "Log in"
-                    }
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full flex justify-center py-2.5 px-4 text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                    >
+                        {submitLabel}
+                    </button>
+
+                    <p
+                        className={`text-center text-sm ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}
+                    >
+                        {isSignup ? (
+                            <>
+                                Already have an account?{" "}
+                                <Link
+                                    to="/Login"
+                                    className="font-medium text-orange-500 hover:text-orange-600"
+                                >
+                                    Log in
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                New to VanLife?{" "}
+                                <Link
+                                    to="/Login?mode=signup"
+                                    className="font-medium text-orange-500 hover:text-orange-600"
+                                >
+                                    Create an account
+                                </Link>
+                            </>
+                        )}
+                    </p>
                 </Form>
             </div>
         </div>

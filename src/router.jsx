@@ -53,17 +53,17 @@ export const router = createBrowserRouter([
       {
         path: "Host",
         element: <HostLayout />,
-        loader: async () => await requireAuth(),
+        loader: async ({ request }) => await requireAuth(request),
         children: [
           {
             path: "dashboard",
             element: <Dashboard />,
-            loader: async () => await requireAuth()
+            loader: async ({ request }) => await requireAuth(request)
           },
           {
             path: "Income",
             element: <Income />,
-            loader: async () => await requireAuth()
+            loader: async ({ request }) => await requireAuth(request)
           },
           {
             path: "vans",

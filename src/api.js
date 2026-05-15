@@ -1,120 +1,121 @@
-// import { initializeApp } from 'firebase/app';
-// import { getFirestore, collection, doc, getDocs, getDoc, query, where } from 'firebase/firestore';
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    query,
+    where,
+} from "firebase/firestore"
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+} from "firebase/auth"
+import { auth, db } from "./firebase"
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCpkB6_xXSQ9A4f-KNZ4XIeOXbscm8gARA",
-//   authDomain: "vanlife-864e0.firebaseapp.com",
-//   projectId: "vanlife-864e0",
-//   storageBucket: "vanlife-864e0.firebasestorage.app",
-//   messagingSenderId: "932957926693",
-//   appId: "1:932957926693:web:ee326c388afa65110016cc",
-// };
+const vansCollectionRef = collection(db, "vans")
 
-// const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-
-// const vansCollection = collection(db, 'vans');
-
-// export default async function getVans(){
-//     const querySnapshot = await getDocs(vansCollection);
-//     const dataArr = querySnapshot.docs.map(doc =>{
-//         return {
-//             ...doc.data(),
-//             id: doc.id
-//         };
-//     });
-//     return dataArr;
-// }
-
-// export async function getVan(id){
-//     const q = query(vansCollection, where('hostId', '==', "123"));
-//     const querySnapshot = await getDocs(q);
-//     if (querySnapshot.empty) {
-//         throw {
-//             message: "Van not found",
-//             statusText: "Not Found",
-//             status: 404
-//         };
-//     }
-//     return docSnap.data();
-// }
-
-async function getVans(){
-    const res = await fetch('/api/vans') 
-    if(!res.ok){
-        throw{
-            message: "Failed to fetch vans!!",
-            statusText: res.statusText,
-            status: res.status
-        }
+function authErrorMessage(code) {
+    switch (code) {
+        case "auth/email-already-in-use":
+            return "An account with this email already exists."
+        case "auth/invalid-email":
+            return "Please enter a valid email address."
+        case "auth/weak-password":
+            return "Password must be at least 6 characters."
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+            return "Invalid email or password."
+        case "auth/too-many-requests":
+            return "Too many attempts. Please try again later."
+        default:
+            return "Authentication failed. Please try again."
     }
-    
-    const data = await res.json();
-    return data.vans;
 }
 
-async function getVan(id){
-    const res = await fetch(`/api/vans/${id}`) 
-    if(!res.ok){
-        throw{
-            message: "Failed to fetch van details!!",
-            statusText: res.statusText,
-            status: res.status
-        }
+export async function loginUser({ email, password }) {
+    try {
+        const { user } = await signInWithEmailAndPassword(auth, email, password)
+        return user
+    } catch (err) {
+        throw { message: authErrorMessage(err.code) }
     }
-    
-    const data = await res.json();
-    return data.vans;
 }
 
-async function getHostVans(){
-    const res = await fetch('/api/vans') 
-    if(!res.ok){
-        throw{
-            message: "Failed to fetch host vans!!",
-            statusText: res.statusText,
-            status: res.status
-        }
+export async function signupUser({ email, password }) {
+    try {
+        const { user } = await createUserWithEmailAndPassword(auth, email, password)
+        return user
+    } catch (err) {
+        throw { message: authErrorMessage(err.code) }
     }
-    
-    const data = await res.json();
-    return data.vans;
 }
 
-async function getHostVan(id){
-    const res = await fetch(`/api/vans/${id}`) 
-    if(!res.ok){
-        throw{
-            message: "Failed to fetch host van details!!",
-            statusText: res.statusText,
-            status: res.status
-        }
-    }
-    
-    const data = await res.json();
-    return data.vans;
+export async function logoutUser() {
+    await signOut(auth)
 }
 
-export default getVans;
-export { getVan, getHostVans, getHostVan };
+export default async function getVans() {
+    const querySnapshot = await getDocs(vansCollectionRef)
+    return querySnapshot.docs.map((docSnap) => ({
+        ...docSnap.data(),
+        id: docSnap.id,
+    }))
+}
 
-export async function loginUser(creds){
-    const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(creds)
-    })
-    if(!res.ok){
-        const errorData = await res.json();
-        throw{
-            message: errorData.message || "Login failed",
-            statusText: res.statusText,
-            status: res.status
+export async function getVan(id) {
+    const docRef = doc(db, "vans", id)
+    const vanSnapshot = await getDoc(docRef)
+    if (!vanSnapshot.exists()) {
+        throw {
+            message: "Van not found",
+            statusText: "Not Found",
+            status: 404,
         }
     }
-    
-    const data = await res.json();
-    return data;
+    return {
+        ...vanSnapshot.data(),
+        id: vanSnapshot.id,
+    }
+}
+
+export async function getHostVans() {
+    const hostId = auth.currentUser?.uid
+    if (!hostId) {
+        throw {
+            message: "You must be logged in to view your vans.",
+            status: 401,
+        }
+    }
+    const q = query(vansCollectionRef, where("hostId", "==", hostId))
+    const querySnapshot = await getDocs(q)
+    return querySnapshot.docs.map((docSnap) => ({
+        ...docSnap.data(),
+        id: docSnap.id,
+    }))
+}
+
+export async function getHostVan(id) {
+    const hostId = auth.currentUser?.uid
+    if (!hostId) {
+        throw {
+            message: "You must be logged in to view this van.",
+            status: 401,
+        }
+    }
+    const docRef = doc(db, "vans", id)
+    const vanSnapshot = await getDoc(docRef)
+    const data = vanSnapshot.data()
+    if (!vanSnapshot.exists() || data.hostId !== hostId) {
+        throw {
+            message: "Van not found",
+            statusText: "Not Found",
+            status: 404,
+        }
+    }
+    return {
+        ...data,
+        id: vanSnapshot.id,
+    }
 }

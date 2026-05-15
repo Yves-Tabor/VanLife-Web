@@ -1,13 +1,17 @@
-import { redirect } from 'react-router-dom'
+import { redirect } from "react-router-dom"
+import { auth } from "./firebase"
 
-export default async function requireAuth(){
-    const isLogged = localStorage.getItem('loggedin');
+export default async function requireAuth(request) {
+    await auth.authStateReady()
 
-    if(!isLogged){
-        const response = redirect("/Login?message=You must be logged in before you can access the host page");
-        response.body = true;  // Workaround for Mirage JS Response polyfill issue
-        throw response;
-    }else{
-        return null;
+    if (!auth.currentUser) {
+        const pathname = request
+            ? new URL(request.url).pathname
+            : "/Host"
+        throw redirect(
+            `/Login?message=${encodeURIComponent("You must be logged in before you can access this page.")}&redirectTo=${encodeURIComponent(pathname)}`
+        )
     }
+
+    return null
 }
