@@ -14,20 +14,29 @@ export async function loader({ request }) {
     return {
         message: url.searchParams.get("message"),
         mode: url.searchParams.get("mode") === "signup" ? "signup" : "login",
+        redirectTo: url.searchParams.get("redirectTo") || "/Host",
     }
 }
 
 export async function action({ request }) {
     const formData = await request.formData()
-    const email = formData.get("email")
-    const password = formData.get("password")
-    const confirmPassword = formData.get("confirmPassword")
+    const email = formData.get("email")?.toString().trim() ?? ""
+    const password = formData.get("password")?.toString() ?? ""
+    const confirmPassword = formData.get("confirmPassword")?.toString() ?? ""
     const intent = formData.get("intent")
     const pathname =
         new URL(request.url).searchParams.get("redirectTo") || "/Host"
 
+    if (!email || !password) {
+        return "Email and password are required."
+    }
+
     if (intent === "signup" && password !== confirmPassword) {
         return "Passwords do not match."
+    }
+
+    if (intent === "signup" && password.length < 6) {
+        return "Password must be at least 6 characters."
     }
 
     try {
@@ -52,7 +61,10 @@ function inputClass(theme) {
 
 export default function Login() {
     const { theme } = useTheme()
-    const { message, mode } = useLoaderData()
+    const { message, mode, redirectTo } = useLoaderData()
+    const redirectQuery = redirectTo
+        ? `?redirectTo=${encodeURIComponent(redirectTo)}`
+        : ""
     const errorMsg = useActionData()
     const navigation = useNavigation()
     const isSignup = mode === "signup"
@@ -160,7 +172,7 @@ export default function Login() {
                             <>
                                 Already have an account?{" "}
                                 <Link
-                                    to="/Login"
+                                    to={`/Login${redirectQuery}`}
                                     className="font-medium text-orange-500 hover:text-orange-600"
                                 >
                                     Log in
@@ -170,7 +182,7 @@ export default function Login() {
                             <>
                                 New to VanLife?{" "}
                                 <Link
-                                    to="/Login?mode=signup"
+                                    to={`/Login?mode=signup&redirectTo=${encodeURIComponent(redirectTo)}`}
                                     className="font-medium text-orange-500 hover:text-orange-600"
                                 >
                                     Create an account

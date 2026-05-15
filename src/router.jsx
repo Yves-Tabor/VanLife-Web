@@ -3,8 +3,8 @@ import Layout from './components/Layout'
 import About from './pages/About'
 import Home from './pages/Home'
 import Login, {loader as loginLoader, action as loginAction} from './pages/Login'
-import Vans, { loader as vansLoader } from './pages/Vans'
-import VanDetail, { loader as vanDetailLoader } from './pages/VanDetail'
+import Vans, { loader as vansLoader, VansError } from './pages/Vans'
+import VanDetail, { loader as vanDetailLoader, action as vanDetailAction } from './pages/VanDetail'
 import HostLayout from './components/HostLayout'
 import Dashboard from './pages/host/Dashboard'
 import Income from './pages/host/Income'
@@ -43,12 +43,13 @@ export const router = createBrowserRouter([
         path: "Vans",
         element: <Vans />,
         loader: vansLoader,
-        errorElement: <Error />
+        errorElement: <VansError />
       },
       {
         path: "Vans/:id",
         element: <VanDetail />,
-        loader: vanDetailLoader
+        loader: vanDetailLoader,
+        action: vanDetailAction,
       },
       {
         path: "Host",
@@ -56,20 +57,20 @@ export const router = createBrowserRouter([
         loader: async ({ request }) => await requireAuth(request),
         children: [
           {
-            path: "dashboard",
+            index: true,
             element: <Dashboard />,
-            loader: async ({ request }) => await requireAuth(request)
+            loader: async ({ request }) => await requireAuth(request),
           },
           {
             path: "Income",
             element: <Income />,
-            loader: async ({ request }) => await requireAuth(request)
+            loader: async ({ request }) => await requireAuth(request),
           },
           {
             path: "vans",
             element: <HostVans />,
             loader: hostVansLoader,
-            errorElement: <Error />
+            errorElement: <Error />,
           },
           {
             path: "vans/:id",
@@ -78,23 +79,23 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Details />
+                element: <Details />,
               },
               {
                 path: "pricing",
-                element: <Pricing />
+                element: <Pricing />,
               },
               {
                 path: "photos",
-                element: <Photos />
-              }
-            ]
+                element: <Photos />,
+              },
+            ],
           },
           {
             path: "Reviews",
-            element: <Reviews />
-          }
-        ]
+            element: <Reviews />,
+          },
+        ],
       },
       {
         path: "*",

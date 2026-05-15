@@ -1,15 +1,14 @@
 import React from "react"
 import { Link, useLoaderData } from "react-router-dom"
-import getVans from "../../api"
+import { getHostVans } from "../../api"
+import requireAuth from "../../util"
 
-export async function loader() {
+export async function loader({ request }) {
+    await requireAuth(request)
     try {
-        console.log("Loading vans from Firestore...")
-        const vans = await getVans()
-        console.log("Vans loaded:", vans)
+        const vans = await getHostVans()
         return { vans }
-    } catch (error) {
-        console.error("Error loading vans:", error)
+    } catch {
         return { vans: [] }
     }
 }
@@ -82,7 +81,7 @@ export default function Dashboard() {
 
                     <div className="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold text-gray-900">Your Listed Vans</h2>
+                            <h2 className="text-xl font-semibold text-gray-900">Your Rented Vans</h2>
                             <Link 
                                 to="vans" 
                                 className="text-orange-500 hover:text-orange-600 font-medium transition-colors duration-200"
