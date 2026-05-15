@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
+import { onAuthStateChanged } from "firebase/auth"
 import avatar from "../assets/images/avatar-icon.png"
 import { useTheme } from "./Theme"
+import { auth } from "../firebase"
+import { logoutUser } from "../api"
 
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [showUserPopup, setShowUserPopup] = useState(false)
-    const isAuthenticated = localStorage.getItem('loggedin') === 'true'
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
     const navigate = useNavigate()
     const userPopupRef = useRef(null)
     const { theme, toggleTheme } = useTheme()
@@ -19,11 +22,18 @@ export default function NavBar() {
         setIsMenuOpen(false)
     }
 
-    const handleLogout = () => {
-        localStorage.setItem('loggedin', 'false')
+    const handleLogout = async () => {
+        await logoutUser()
         setShowUserPopup(false)
-        navigate('/Login')
+        navigate("/Login")
     }
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setIsAuthenticated(Boolean(user))
+        })
+        return unsubscribe
+    }, [])
 
     const toggleUserPopup = () => {
         setShowUserPopup(!showUserPopup)
@@ -63,7 +73,7 @@ export default function NavBar() {
                                 <span>Login</span>
                             </NavLink>
                             <NavLink
-                                to={isAuthenticated ? "/Host" : "/login?You need to login befor you can access this page"}
+                                to={isAuthenticated ? "/Host" : "/Login?message=You%20must%20log%20in%20to%20access%20the%20host%20area."}
                                 className={({ isActive }) => isActive ? "bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1 dark:bg-gray-800" : "bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium flex items-center space-x-1 dark:bg-gray-800 dark:border-gray-600"}
                             >   Host
                             </NavLink>
@@ -181,7 +191,7 @@ export default function NavBar() {
                             </NavLink>
 
                             <NavLink
-                                to={isAuthenticated ? "/Host" : "/login?You need to login before you can access this page"}
+                                to={isAuthenticated ? "/Host" : "/Login?message=You%20must%20log%20in%20to%20access%20the%20host%20area."}
                                 onClick={closeMenu}
                                 className={({ isActive }) => isActive ? "block bg-black text-white border-t-4 rounded-b-sm border-orange-300 shadow-sm px-4 py-2 hover:text-gray-100 font-medium dark:bg-gray-800" : "block bg-black border-t-4 rounded-b-sm border-black text-white hover:shadow-md px-4 py-2 hover:text-gray-100 font-medium dark:bg-gray-800 dark:border-gray-600"}
                             >

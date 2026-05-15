@@ -1,40 +1,41 @@
-import { NavLink } from 'react-router-dom'
-import { Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from "react-router-dom"
+import { useTheme } from "./Theme"
+import { hostNavClass, hostTheme } from "../util/hostTheme"
 
-export default function HostLayout(){
-    return(
-        <nav className="top-0 bg-transparent">
+export default function HostLayout() {
+    const { theme } = useTheme()
+    const t = hostTheme(theme)
+
+    return (
+        <div className={t.page}>
             <nav className="host-nav flex justify-evenly md:w-[50%] p-5 bg-transparent md:space-x-[5%]">
                 <NavLink
                     to="."
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal py-1 px-2 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
+                    end
+                    className={({ isActive }) => hostNavClass(theme, isActive)}
                 >
                     Dashboard
                 </NavLink>
-
                 <NavLink
-                    to="income"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
+                    to="Income"
+                    className={({ isActive }) => hostNavClass(theme, isActive)}
                 >
                     Income
                 </NavLink>
-                
                 <NavLink
                     to="vans"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
+                    className={({ isActive }) => hostNavClass(theme, isActive)}
                 >
                     Vans
                 </NavLink>
-
                 <NavLink
-                    to="reviews"
-                    className={({isActive})=> isActive ? "font-semibold p-1 underline transition-all duration-300 ease-in-out end" : "hover:underline font-normal p-1 transition-all duration-300 ease-in-out hover:text-orange-600 end"}
+                    to="Reviews"
+                    className={({ isActive }) => hostNavClass(theme, isActive)}
                 >
                     Reviews
                 </NavLink>
-
             </nav>
-            <Outlet/>
-        </nav>
+            <Outlet />
+        </div>
     )
 }

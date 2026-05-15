@@ -3,12 +3,12 @@ import Layout from './components/Layout'
 import About from './pages/About'
 import Home from './pages/Home'
 import Login, {loader as loginLoader, action as loginAction} from './pages/Login'
-import Vans, { loader as vansLoader } from './pages/Vans'
-import VanDetail, { loader as vanDetailLoader } from './pages/VanDetail'
+import Vans, { loader as vansLoader, VansError } from './pages/Vans'
+import VanDetail, { loader as vanDetailLoader, action as vanDetailAction } from './pages/VanDetail'
 import HostLayout from './components/HostLayout'
 import Dashboard from './pages/host/Dashboard'
-import Income from './pages/host/Income'
-import Reviews from './pages/host/Reviews'
+import Income, { loader as incomeLoader } from './pages/host/Income'
+import Reviews, { loader as reviewsLoader } from './pages/host/Reviews'
 import HostVans, { loader as hostVansLoader } from './pages/host/HostVans'
 import Details from './pages/host/Details'
 import Pricing from './pages/host/Pricing'
@@ -43,33 +43,34 @@ export const router = createBrowserRouter([
         path: "Vans",
         element: <Vans />,
         loader: vansLoader,
-        errorElement: <Error />
+        errorElement: <VansError />
       },
       {
         path: "Vans/:id",
         element: <VanDetail />,
-        loader: vanDetailLoader
+        loader: vanDetailLoader,
+        action: vanDetailAction,
       },
       {
         path: "Host",
         element: <HostLayout />,
-        loader: async () => await requireAuth(),
+        loader: async ({ request }) => await requireAuth(request),
         children: [
           {
-            path: "dashboard",
+            index: true,
             element: <Dashboard />,
-            loader: async () => await requireAuth()
+            loader: async ({ request }) => await requireAuth(request),
           },
           {
             path: "Income",
             element: <Income />,
-            loader: async () => await requireAuth()
+            loader: incomeLoader,
           },
           {
             path: "vans",
             element: <HostVans />,
             loader: hostVansLoader,
-            errorElement: <Error />
+            errorElement: <Error />,
           },
           {
             path: "vans/:id",
@@ -78,23 +79,24 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Details />
+                element: <Details />,
               },
               {
                 path: "pricing",
-                element: <Pricing />
+                element: <Pricing />,
               },
               {
                 path: "photos",
-                element: <Photos />
-              }
-            ]
+                element: <Photos />,
+              },
+            ],
           },
           {
             path: "Reviews",
-            element: <Reviews />
-          }
-        ]
+            element: <Reviews />,
+            loader: reviewsLoader,
+          },
+        ],
       },
       {
         path: "*",
