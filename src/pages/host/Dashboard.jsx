@@ -5,8 +5,8 @@ import { useTheme } from "../../components/Theme"
 import { hostTheme } from "../../util/hostTheme"
 
 export async function loader({ request }) {
-    await requireAuth(request)
     try {
+        await requireAuth(request)
         const vans = await getHostVans()
         const income = getHostIncomeSummary(vans)
         const reviews = getHostReviewsSummary(vans)
@@ -16,7 +16,8 @@ export async function loader({ request }) {
             averageRating: reviews.averageRating,
             reviewCount: reviews.count,
         }
-    } catch {
+    } catch (err) {
+        if (err instanceof Response) throw err
         return { vans: [], incomeTotal: 0, averageRating: 0, reviewCount: 0 }
     }
 }
@@ -25,6 +26,10 @@ export default function Dashboard() {
     const loaderData = useLoaderData()
     const { theme } = useTheme()
     const t = hostTheme(theme)
+
+    if (!loaderData) return null
+
+    const { vans = [], incomeTotal = 0, averageRating = 0, reviewCount = 0 } = loaderData
 
     function renderVanElements(vans) {
         if (vans.length === 0) {
@@ -56,7 +61,7 @@ export default function Dashboard() {
                                 {van.name}
                             </h3>
                             <p className="text-2xl font-bold text-orange-500">
-                                ${van.price}
+                                \${van.price}
                                 <span className={`text-sm font-normal ${t.muted}`}>
                                     /day
                                 </span>
@@ -85,7 +90,7 @@ export default function Dashboard() {
                         <span className={`text-sm ${t.muted}`}>Last 30 days</span>
                     </div>
                     <div className="text-3xl font-bold text-green-600">
-                        ${loaderData.incomeTotal.toLocaleString()}
+                        \${incomeTotal.toLocaleString()}
                     </div>
                     <Link to="Income" className={`inline-flex items-center mt-2 font-medium ${t.link}`}>
                         View Details →
@@ -103,9 +108,7 @@ export default function Dashboard() {
                                 <path d="M12 2l3.092 6.916L12 17.084l6.916-6.916L12 2z" />
                             </svg>
                             <span className={`text-2xl font-bold ${t.heading}`}>
-                                {loaderData.reviewCount > 0
-                                    ? loaderData.averageRating.toFixed(1)
-                                    : "—"}
+                                {reviewCount > 0 ? averageRating.toFixed(1) : "—"}
                             </span>
                             <span className={t.muted}>/5</span>
                         </div>
@@ -122,7 +125,7 @@ export default function Dashboard() {
                             View All →
                         </Link>
                     </div>
-                    {renderVanElements(loaderData?.vans || [])}
+                    {renderVanElements(vans)}
                 </div>
             </div>
         </div>
