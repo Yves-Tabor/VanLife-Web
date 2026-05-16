@@ -4,9 +4,7 @@ import { getHostVans, getHostReviewsSummary } from "../../api"
 import requireAuth from "../../util"
 import { useTheme } from "../../components/Theme"
 import { hostTheme } from "../../util/hostTheme"
-
-const reviewsGraphUrl =
-    "https://assets.scrimba.com/advanced-react/react-router/reviews-graph.png"
+import reviewsGraphUrl from "../../assets/reviews-graph.png"
 
 export async function loader({ request }) {
     await requireAuth(request)
@@ -29,9 +27,8 @@ export default function Reviews() {
                     Last <span className="font-semibold underline">30 days</span>
                 </p>
             </div>
-
             <img
-                className="w-full max-w-[650px] mb-6 rounded-md"
+                className="w-full max-w-[280px] md:max-w-[450px] mb-8 rounded-md opacity-80"
                 src={reviewsGraphUrl}
                 alt="Review rating trend over the last 30 days"
             />

@@ -3,9 +3,7 @@ import { getHostVans, getHostIncomeSummary } from "../../api"
 import requireAuth from "../../util"
 import { useTheme } from "../../components/Theme"
 import { hostTheme } from "../../util/hostTheme"
-
-const incomeGraphUrl =
-    "https://assets.scrimba.com/advanced-react/react-router/income-graph.png"
+import incomeGraphUrl from "../../assets/images/income-graph.png"
 
 export async function loader({ request }) {
     await requireAuth(request)
@@ -31,7 +29,7 @@ export default function Income() {
             </h2>
 
             <img
-                className="w-full max-w-[650px] mb-8 rounded-md"
+                className="w-full max-w-[280px] md:max-w-[450px] mb-8 rounded-md opacity-80"
                 src={incomeGraphUrl}
                 alt="Income trend over the last 30 days"
             />

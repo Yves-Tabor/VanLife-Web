@@ -93,7 +93,6 @@ export default async function getVans() {
         }))
     }
 
-    // Fallback for legacy docs missing isCatalog (pre-seed data)
     const allSnapshot = await getDocs(vansCollectionRef)
     return allSnapshot.docs
         .filter((docSnap) => {

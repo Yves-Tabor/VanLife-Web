@@ -1,4 +1,3 @@
-/** Marketplace catalog vans (no hostId — available to rent). */
 export const catalogVans = [
     {
         id: "1",

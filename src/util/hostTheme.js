@@ -1,4 +1,3 @@
-/** Shared light/dark class sets for host area (matches primary pages). */
 export function hostTheme(theme) {
     const light = theme === "light"
 

@@ -1,4 +1,6 @@
+import React from "react"
 import { Link, useLoaderData } from "react-router-dom"
+import { BsStarFill } from "react-icons/bs"
 import { getHostVans, getHostIncomeSummary, getHostReviewsSummary } from "../../api"
 import requireAuth from "../../util"
 import { useTheme } from "../../components/Theme"
@@ -27,49 +29,48 @@ export default function Dashboard() {
     const { theme } = useTheme()
     const t = hostTheme(theme)
 
+    console.log("Dashboard rendered, loaderData:", loaderData)
+
     if (!loaderData) return null
 
     const { vans = [], incomeTotal = 0, averageRating = 0, reviewCount = 0 } = loaderData
+
+    console.log("vans:", vans, "incomeTotal:", incomeTotal)
 
     function renderVanElements(vans) {
         if (vans.length === 0) {
             return (
                 <p className={t.muted}>
-                    No rented vans yet. Browse the{" "}
-                    <Link to="/Vans" className={t.link}>
-                        catalog
-                    </Link>{" "}
-                    to rent one.
+                    No listed vans yet.
                 </p>
             )
         }
-
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-4">
                 {vans.map((van) => (
                     <div
                         key={van.id}
-                        className={`${t.panel} rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300`}
+                        className={`flex items-center justify-between rounded-md px-4 py-3 ${t.card}`}
                     >
-                        <img
-                            src={van.imageUrl}
-                            alt={`Photo of ${van.name}`}
-                            className="w-full h-48 object-cover"
-                        />
-                        <div className="p-4">
-                            <h3 className={`text-lg font-semibold mb-2 ${t.heading}`}>
-                                {van.name}
-                            </h3>
-                            <p className="text-2xl font-bold text-orange-500">
-                                \${van.price}
-                                <span className={`text-sm font-normal ${t.muted}`}>
-                                    /day
-                                </span>
-                            </p>
+                        <div className="flex items-center gap-4">
+                            <img
+                                src={van.imageUrl}
+                                alt={`Photo of ${van.name}`}
+                                className="w-16 h-16 rounded-md object-cover"
+                            />
+                            <div>
+                                <h3 className={`font-bold text-lg ${t.heading}`}>
+                                    {van.name}
+                                </h3>
+                                <p className="text-orange-500 font-semibold">
+                                    ${van.price}
+                                    <span className={`text-sm font-normal ${t.muted}`}>/day</span>
+                                </p>
+                            </div>
                         </div>
                         <Link
                             to={`vans/${van.id}`}
-                            className="block w-full bg-orange-500 text-white text-center py-2 px-4 hover:bg-orange-600 transition-colors duration-200"
+                            className={`text-sm font-semibold underline ${t.link}`}
                         >
                             View
                         </Link>
@@ -80,54 +81,64 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
-            <h1 className={`text-3xl font-bold mb-8 ${t.heading}`}>Host Dashboard</h1>
+        <div className="px-[6%] md:px-[10%] py-8 md:py-10">
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div className={`${t.panel} rounded-lg p-6`}>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className={`text-xl font-semibold ${t.heading}`}>Income</h2>
-                        <span className={`text-sm ${t.muted}`}>Last 30 days</span>
+            <div className="flex flex-col md:flex-row gap-4 mb-8">
+
+                <section className={`flex-1 rounded-md px-6 py-5 flex flex-col gap-1 ${t.card}`}>
+                    <div className="flex items-baseline justify-between mb-1">
+                        <h2 className={`text-xl font-bold ${t.heading}`}>Income</h2>
+                        <p className={`text-sm ${t.muted}`}>
+                            Last <span className="font-semibold underline">30 days</span>
+                        </p>
                     </div>
-                    <div className="text-3xl font-bold text-green-600">
-                        \${incomeTotal.toLocaleString()}
-                    </div>
-                    <Link to="Income" className={`inline-flex items-center mt-2 font-medium ${t.link}`}>
-                        View Details →
+                    <p className={`font-extrabold text-4xl ${t.heading}`}>
+                        ${incomeTotal.toLocaleString()}
+                    </p>
+                    <Link
+                        to="Income"
+                        className={`text-sm font-semibold underline mt-2 ${t.link}`}
+                    >
+                        Details
                     </Link>
-                </div>
+                </section>
 
-                <div className={`${t.panel} rounded-lg p-6`}>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className={`text-xl font-semibold ${t.heading}`}>Review Score</h2>
-                        <div className="flex items-center">
-                            <svg
-                                className="text-yellow-400 mr-2 w-5 h-5 fill-current"
-                                viewBox="0 0 24 24"
-                            >
-                                <path d="M12 2l3.092 6.916L12 17.084l6.916-6.916L12 2z" />
-                            </svg>
-                            <span className={`text-2xl font-bold ${t.heading}`}>
-                                {reviewCount > 0 ? averageRating.toFixed(1) : "—"}
-                            </span>
-                            <span className={t.muted}>/5</span>
-                        </div>
+                <section className={`flex-1 rounded-md px-6 py-5 flex flex-col gap-1 ${t.card}`}>
+                    <div className="flex items-baseline justify-between mb-1">
+                        <h2 className={`text-xl font-bold ${t.heading}`}>Review score</h2>
+                        <p className={`text-sm ${t.muted}`}>
+                            Last <span className="font-semibold underline">30 days</span>
+                        </p>
                     </div>
-                    <Link to="Reviews" className={`inline-flex items-center font-medium ${t.link}`}>
-                        View Details →
+                    <div className="flex items-center gap-2">
+                        <BsStarFill className="text-yellow-400 text-2xl" />
+                        <p className={`font-extrabold text-4xl ${t.heading}`}>
+                            {reviewCount > 0 ? averageRating.toFixed(1) : "—"}
+                        </p>
+                        <span className={`text-lg ${t.muted}`}>/5</span>
+                    </div>
+                    <Link
+                        to="Reviews"
+                        className={`text-sm font-semibold underline mt-2 ${t.link}`}
+                    >
+                        Details
                     </Link>
-                </div>
+                </section>
 
-                <div className={`${t.panel} rounded-lg p-6 lg:col-span-2`}>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className={`text-xl font-semibold ${t.heading}`}>Your Rented Vans</h2>
-                        <Link to="vans" className={`font-medium ${t.link}`}>
-                            View All →
-                        </Link>
-                    </div>
-                    {renderVanElements(vans)}
-                </div>
             </div>
+
+            <section>
+                <div className={`flex items-baseline justify-between gap-2 mb-4 border-b pb-3 ${t.border}`}>
+                    <h2 className={`text-lg md:text-xl font-bold ${t.heading}`}>
+                        Your listed vans
+                    </h2>
+                    <Link to="vans" className={`text-sm font-semibold underline ${t.link}`}>
+                        View all
+                    </Link>
+                </div>
+                {renderVanElements(vans)}
+            </section>
+
         </div>
     )
 }
