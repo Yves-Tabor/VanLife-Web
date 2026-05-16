@@ -5,11 +5,9 @@ service cloud.firestore {
     match /vans/{vanId} {
       allow read: if true;
 
-      // Marketplace catalog (seeded / browsable listings)
       allow create, update: if request.resource.data.isCatalog == true
         && !('hostId' in request.resource.data);
 
-      // Rented copy created when a user clicks "Rent the van"
       allow create: if request.auth != null
         && request.resource.data.isCatalog == false
         && request.resource.data.hostId == request.auth.uid;
