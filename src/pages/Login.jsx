@@ -81,7 +81,7 @@ export default function Login() {
 
     return (
         <div
-            className={`${theme === "light" ? "bg-[#FFF7ED]" : "bg-black"} min-h-screen py-[10vh] flex items-center justify-center px-4 ${theme === "dark" ? "dark" : ""}`}
+            className={`${theme === "light" ? "bg-[#FFF7ED]" : "bg-black"} py-[10vh] flex items-center justify-center px-4 ${theme === "dark" ? "dark" : ""}`}
         >
             <div className="max-w-md w-full space-y-8">
                 <div className="text-center space-y-2">
