@@ -140,7 +140,7 @@ export default function NavBar() {
                                 className="p-2 rounded-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-black dark:text-white"
                                 aria-label="Toggle theme"
                             >
-                                {theme === 'light' ? 'ğŸŒ™' : 'â˜€ï¸'}
+                                {theme === 'light' ? 'í¼™' : 'â˜€ï¸'}
                             </button>
                             <AvatarButton refProp={userPopupRef} />
                         </div>
@@ -150,7 +150,7 @@ export default function NavBar() {
                                 onClick={toggleTheme}
                                 className="p-2 text-2xl text-black dark:text-white"
                             >
-                                {theme === 'light' ? 'ğŸŒ™' : 'â˜€ï¸'}
+                                {theme === 'light' ? 'í¼™' : 'â˜€ï¸'}
                             </button>
                             <button
                                 onClick={toggleMenu}
